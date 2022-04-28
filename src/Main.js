@@ -7,7 +7,7 @@ class Main extends React.Component {
     return (
         Object.values(this.props.imageURLs).map(value => {
           return(
-            <><HornedBeast title={value.title} description={value.description} src={value.image_url}/></>
+            <><HornedBeast key={value._id} title={value.title} description={value.description} src={value.image_url}/></>
           )
         })
     )
