@@ -7,7 +7,6 @@ import imageURLs from "./data.json";
 import SelectedBeast from "./SelectedBeast"
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-import ListGroup from 'react-bootstrap/ListGroup';
 
 class App extends React.Component {
   constructor(props) {
@@ -17,22 +16,16 @@ class App extends React.Component {
       selectedBeast: {},
       userName: "User",
       hornFilterList: [],
+      hornOptions: [],
+      filterURLs: [],
     };
-    this.handleLoad = this.handleLoad.bind(this);
   }
 
   componentDidMount() {
-    window.addEventListener('load', this.handleLoad);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('load', this.handleLoad)
-  }
-
-  handleLoad() {
-    const setAvailableOptions = imageURLs.map(value => value.horns).filter((value, index, self) => self.indexOf(value) === index); // This needs to return horn counts
-    console.log('Mapped options',setAvailableOptions);
-    this.setState({ hornFilterList: setAvailableOptions.map((value) => (<option id={value.key} value={value.horns}>{value.name}</option>))}); // This needs to set value and textcontent to unique horn counts
+    this.setState({filterURLs: imageURLs});
+    const setAvailableOptions = imageURLs.map(value => value.horns).filter((value, index, self) => self.indexOf(value) === index);
+    this.setState({hornOptions: setAvailableOptions.sort(function(a,b){return a - b;})});
+    this.setState({ hornFilterList: setAvailableOptions.map((value) => (<option key={value} value={value}>{value}</option>)).concat(<option key={-1} value={'default'}>{'Unfiltered'}</option>)});
   }
 
   handleCloseModal = () => {
@@ -51,8 +44,11 @@ class App extends React.Component {
 
   handleChange = (e) => {
     e.preventDefault();
-    if (this.state.hornFilterList.includes(e.target.value)) {
-      this.state.hornFilterList.find(num => num === e.target.value);
+    if(e.target.value === 'default'){
+      this.setState({filterURLs: imageURLs});
+    } else {
+    const passList = imageURLs.filter(value => value.horns === parseInt(e.target.value));
+    this.setState({filterURLs: passList});
     }
   }
   render() {
@@ -74,19 +70,12 @@ class App extends React.Component {
               {this.state.hornFilterList}
             </Form.Control>
           </Form>
-          <ListGroup>
-            {this.state.hornFilterList.map(value => (
-              <ListGroup.Item key={value._id} >
-                {value.name}
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
         </Container>
         <div className="App">
           <Header title={"Pinterest but for Horned Beasts"} />
           <h2>Welcome {this.state.userName}</h2>
           <SelectedBeast showModal={this.state.showModal} handleCloseModal={this.handleCloseModal} selectedBeast={this.state.selectedBeast} />
-          <Main imageURLs={imageURLs} handleShowModal={this.handleShowModal} />
+          <Main imageURLs={this.state.filterURLs} handleShowModal={this.handleShowModal} />
           <Footer text={"☺"} />
         </div>
       </>
@@ -95,4 +84,3 @@ class App extends React.Component {
 }
 
 export default App;
-// imageURLs={imageURLs} Need to pass a filtered list using the value.horns above
