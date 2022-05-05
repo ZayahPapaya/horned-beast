@@ -12,7 +12,6 @@ class SelectedBeast extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>{this.props.selectedBeast.description}</p>
-          {console.log(this.props.selectedBeast.image_url)}
           <Image src={this.props.selectedBeast.image_url} alt={this.props.selectedBeast.description} title={this.props.selectedBeast.title}/>
         </Modal.Body>
         <Modal.Footer>
